@@ -1,5 +1,7 @@
 package com.gqphd.samplesensorinstrument;
 
+import java.io.IOException;
+
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
@@ -7,7 +9,9 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -18,6 +22,8 @@ public class MainActivity extends Activity {
 	
 	private SensorManager m_mgrSensor;
 	private Sensor m_sensorLinAcc;
+	
+	MediaPlayer m_mpTic; 
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +43,18 @@ public class MainActivity extends Activity {
 		//init sensor
 		m_mgrSensor = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 		m_sensorLinAcc = m_mgrSensor.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
+		
+		m_mpTic = MediaPlayer.create(getApplicationContext(), R.raw.macarastic);
+		try {
+			m_mpTic.prepare();
+		} catch (IllegalStateException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 	
 	SensorEventListener m_cbSensorListener = new SensorEventListener() {
@@ -61,7 +79,12 @@ public class MainActivity extends Activity {
 				m_arrTvDbgVals[3].setText("POW " + String.format("%.2f", pow));
 				
 				if(pow > PowThreshold){
+					Log.i("gqphd","Shake detected - pow : " + String.format("%.2f", pow));
 					m_arrTvDbgVals[3].setTextColor(Color.RED);
+					
+					//play sound
+					m_mpTic.start();
+					
 				}else{
 					m_arrTvDbgVals[3].setTextColor(Color.BLACK);
 				}
