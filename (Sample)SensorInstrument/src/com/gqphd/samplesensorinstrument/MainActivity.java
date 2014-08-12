@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.AssetFileDescriptor;
 import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -12,6 +13,9 @@ import android.hardware.SensorManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -25,9 +29,17 @@ public class MainActivity extends Activity {
 	
 	MediaPlayer m_mpTic; 
 	
+	boolean m_isDebug = false;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		//make it fullscreen
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+			    WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		
 		setContentView(R.layout.activity_main);
 
 		//init dbg ui
@@ -44,7 +56,21 @@ public class MainActivity extends Activity {
 		m_mgrSensor = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 		m_sensorLinAcc = m_mgrSensor.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
 		
-		m_mpTic = MediaPlayer.create(getApplicationContext(), R.raw.macarastic);
+		//prepare from resource
+		//m_mpTic = MediaPlayer.create(getApplicationContext(), R.raw.macarastic);
+		
+		//prepare from asset structure
+		AssetFileDescriptor descriptor;
+		m_mpTic = new MediaPlayer();
+		try {
+			descriptor = getAssets().openFd("Maracas2.mp3");
+			m_mpTic.setDataSource(descriptor.getFileDescriptor(), descriptor.getStartOffset(), descriptor.getLength());
+	        descriptor.close();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}		
+		
 		try {
 			m_mpTic.prepare();
 		} catch (IllegalStateException e) {
@@ -55,6 +81,10 @@ public class MainActivity extends Activity {
 			e.printStackTrace();
 		}
 		
+		//if not debug, hide debug ui
+		if(!m_isDebug){
+			m_linDbgValues.setVisibility(View.GONE);
+		}
 	}
 	
 	SensorEventListener m_cbSensorListener = new SensorEventListener() {

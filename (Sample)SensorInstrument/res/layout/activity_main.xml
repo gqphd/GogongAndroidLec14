@@ -2,6 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@android:color/background_dark"
     tools:context="${relativePackage}.${activityClass}" >
 
     <LinearLayout
@@ -13,13 +14,18 @@
         android:orientation="vertical" >
 
         <LinearLayout
-            android:orientation="horizontal"
             android:id="@+id/laylinAccval"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
-
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
         </LinearLayout>
 
+        <ImageView
+            android:id="@+id/imageView1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.69"
+            android:src="@drawable/enjoypic" />
     </LinearLayout>
 
 </RelativeLayout>
