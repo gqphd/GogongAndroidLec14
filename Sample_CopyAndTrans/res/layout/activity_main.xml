@@ -5,6 +5,7 @@
     tools:context="${relativePackage}.${activityClass}" >
 
     <LinearLayout
+        android:id="@+id/linearLayout1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
@@ -38,8 +39,21 @@
         <Spinner
             android:id="@+id/spinner2"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:visibility="invisible" />
 
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/linearLayout1"
+        android:layout_centerHorizontal="true"
+        android:clickable="true"
+        android:focusable="true"
+        android:longClickable="true"
+        android:text="Test Text .. \n The US state of Missouri is sending the National Guard to the town of Ferguson as protests escalate over the police shooting of an unarmed black teenager."
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
 </RelativeLayout>
