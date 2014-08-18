@@ -6,14 +6,13 @@ import android.content.ClipDescription;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
-import android.text.InputFilter.LengthFilter;
 import android.util.Log;
-import android.widget.Toast;
 
 /**
  * @author GQ
@@ -40,9 +39,43 @@ public class ClipboardWatchService extends Service{
 			Log.i(this.getClass().getName(),"Service task started");
 			
 			String txt = (String)msg.obj;
-			//do something with this string.
-			//translate?
-			Toast.makeText(getApplicationContext(), "txt : " + txt, Toast.LENGTH_SHORT).show();
+			
+			//trial 1
+			//@ref https://code.google.com/p/google-api-translate-java/
+//			GoogleAPI.setHttpReferrer("http://code.google.com/p/google-api-translate-java/");
+//			GoogleAPI.setKey("AIzaSyA2laYVU2YkQzKnkC4EoJGBUpXj7Mrof-0");
+//			try {
+//				String translatedText = Translate.DEFAULT.execute(txt, Language.ENGLISH, Language.KOREAN);
+//				Toast.makeText(getApplicationContext(), txt + "\n   ->   \n" + translatedText, Toast.LENGTH_SHORT).show();
+//			} catch (GoogleAPIException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//				Log.e(this.getClass().getName(),e.getMessage());
+//			}
+			
+			//trial 2
+			//@ref https://github.com/Rookery/google-api-translate-android
+//			GoogleTranslator.getInstance().execute(txt, Language.KOREAN, "AIzaSyA2laYVU2YkQzKnkC4EoJGBUpXj7Mrof-0", new GoogleTranslator.Callback() {
+//                @Override
+//                public void onSuccess(Language detected_lang, String translated_text) {
+//                    //Log.d(this.getClass().getName(), "onSuccess: language:" + detected_lang.toString() + "\ttext:" + translated_text);
+//                    
+//                    Toast.makeText(getApplicationContext(), translated_text, Toast.LENGTH_SHORT).show();
+//                }
+//
+//                @Override
+//                public void onFailed(TranslateError e) {
+//                    e.printStackTrace();
+//                }
+//            });
+			
+			//simple - simply open naver dic.
+			//open web @ref http://caliou.tistory.com/2
+			String sUri = String.format("http://m.endic.naver.com/search.nhn?searchOption=all&query=%s&=",txt);
+			Uri uri = Uri.parse(sUri);   
+			Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+			intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			startActivity(intent);
 			
 			Log.i(this.getClass().getName(),"Service task end");
 			// Stop the service using the startId, so that we don't stop
