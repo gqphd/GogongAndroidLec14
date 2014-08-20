@@ -33,41 +33,10 @@ public class ClipboardWatchService extends Service{
 		}
 		@Override
 		public void handleMessage(Message msg) {
-			// Normally we would do some work here, like download a file.
-			// For our sample, we just sleep for 5 seconds.
-			
 			Log.i(this.getClass().getName(),"Service task started");
 			
 			String txt = (String)msg.obj;
-			
-			//trial 1
-			//@ref https://code.google.com/p/google-api-translate-java/
-//			GoogleAPI.setHttpReferrer("http://code.google.com/p/google-api-translate-java/");
-//			GoogleAPI.setKey("AIzaSyA2laYVU2YkQzKnkC4EoJGBUpXj7Mrof-0");
-//			try {
-//				String translatedText = Translate.DEFAULT.execute(txt, Language.ENGLISH, Language.KOREAN);
-//				Toast.makeText(getApplicationContext(), txt + "\n   ->   \n" + translatedText, Toast.LENGTH_SHORT).show();
-//			} catch (GoogleAPIException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//				Log.e(this.getClass().getName(),e.getMessage());
-//			}
-			
-			//trial 2
-			//@ref https://github.com/Rookery/google-api-translate-android
-//			GoogleTranslator.getInstance().execute(txt, Language.KOREAN, "AIzaSyA2laYVU2YkQzKnkC4EoJGBUpXj7Mrof-0", new GoogleTranslator.Callback() {
-//                @Override
-//                public void onSuccess(Language detected_lang, String translated_text) {
-//                    //Log.d(this.getClass().getName(), "onSuccess: language:" + detected_lang.toString() + "\ttext:" + translated_text);
-//                    
-//                    Toast.makeText(getApplicationContext(), translated_text, Toast.LENGTH_SHORT).show();
-//                }
-//
-//                @Override
-//                public void onFailed(TranslateError e) {
-//                    e.printStackTrace();
-//                }
-//            });
+			txt = txt.replace(" ","");//rem blank
 			
 			//simple - simply open naver dic.
 			//open web @ref http://caliou.tistory.com/2
@@ -87,15 +56,9 @@ public class ClipboardWatchService extends Service{
 	@Override
 	public void onCreate() {
 		Log.i(this.getClass().getName(),"Service onCreate called");
-		// Start up the thread running the service.  Note that we create a
-		// separate thread because the service normally runs in the process's
-		// main thread, which we don't want to block.  We also make it
-		// background priority so CPU-intensive work will not disrupt our UI.
 		HandlerThread thread = new HandlerThread("ServiceStartArguments");
-				//Process.THREAD_PRIORITY_BACKGROUND);
 		thread.start();
 
-		// Get the HandlerThread's Looper and use it for our Handler
 		mServiceLooper = thread.getLooper();
 		mServiceHandler = new ServiceHandler(mServiceLooper);
 		
@@ -104,13 +67,11 @@ public class ClipboardWatchService extends Service{
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		//Toast.makeText(this, "service starting", Toast.LENGTH_SHORT).show();
 		Log.i(this.getClass().getName(),"Service onStartCommand called");
 
 		thread = new Thread(new Runnable() {
 			@Override
 			public void run() {
-				// TODO Auto-generated method stub
 				while(!Thread.interrupted()){
 					long sleep_time = 2000;//2 sec
 					
@@ -119,13 +80,12 @@ public class ClipboardWatchService extends Service{
 					if(null!=clipData){
 						String new_text_candid = null;
 						
-						// if you need text data only, use:
 						if (clipData.getDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN))
-							// WARNING: The item could cantain URI that points to the text data.
 							// In this case the getText() returns null and this code fails!
 							new_text_candid = clipData.getItemAt(0).getText().toString();
-						// or you may coerce the data to the text representation:
-						new_text_candid = clipData.getItemAt(0).coerceToText(getApplicationContext()).toString();
+						else
+							// or you may coerce the data to the text representation:
+							new_text_candid = clipData.getItemAt(0).coerceToText(getApplicationContext()).toString();
 					
 						//check renew. do something only when new clipboard data comes
 						if(null!=new_text_candid && !new_text_candid.equals(clipboard_text)){
@@ -143,17 +103,6 @@ public class ClipboardWatchService extends Service{
 						
 						if(null!=clipboard_text)
 							Log.i(this.getClass().getName(),"data - [" + clipboard_text + "]");
-						
-//						if(null != clipboard_text){
-//							//new token found!
-//							//do something with local var. not global one.
-//							String new_text =  clipboard_text;
-//							clipboard_text = null;
-//							
-//							Message msg = mServiceHandler.obtainMessage();
-//							msg.obj = new_text;
-//							mServiceHandler.sendMessage(msg);
-//						}
 					}
 					
 					try {
@@ -169,12 +118,6 @@ public class ClipboardWatchService extends Service{
 		});
 		thread.setDaemon(true);
 		thread.start();
-		
-		// For each start request, send a message to start a job and deliver the
-		// start ID so we know which request we're stopping when we finish the job
-//		Message msg = mServiceHandler.obtainMessage();
-//		msg.arg1 = startId;
-//		mServiceHandler.sendMessage(msg);
 
 		// If we get killed, after returning from here, restart
 		return START_STICKY;
@@ -190,7 +133,6 @@ public class ClipboardWatchService extends Service{
 	public void onDestroy() {
 		Log.i(this.getClass().getName(),"Service onDestroy called");
 		thread.interrupt();
-//		Toast.makeText(this, "service done", Toast.LENGTH_SHORT).show();
 	}
 
 }
